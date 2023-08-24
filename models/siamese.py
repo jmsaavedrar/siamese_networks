@@ -19,8 +19,7 @@ class Siamese(tf.keras.Model):
         super(Siamese, self).__init__(**kwargs)        
         self.CROP_SIZE = config_data.getint('CROP_SIZE')
         self.PROJECT_DIM =  config_model.getint('PROJECT_DIM')
-        self.WEIGHT_DECAY = config_model.getfloat('WEIGHT_DECAY')
-        self.LATENT_DIM  = config_model.getint('LATENT_DIM')        
+        self.WEIGHT_DECAY = config_model.getfloat('WEIGHT_DECAY')            
         self.CHANNELS = 3        
         self.encoder = self.get_encoder()
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
@@ -57,7 +56,7 @@ class Siamese(tf.keras.Model):
         margin = 1.0
         dist_pos  = tf.math.sqrt(2 - tf.reduce_sum((xa * xp), axis = 1))
         dist_neg  = tf.math.sqrt(2 - tf.reduce_sum((xa * xn), axis = 1))
-        loss = dist_pos - dist_neg + margin
+        loss = tf.math.maximum(0, dist_pos - dist_neg + margin)
         return tf.reduce_mean(loss)
                 
                                     
