@@ -26,6 +26,7 @@ def map_func(example_serialized):
 AUTO = tf.data.AUTOTUNE
 #---------------------------------------------------------------------------------------
 import models.siamese as siamese
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-config', type = str, required = True)    
@@ -59,4 +60,4 @@ if __name__ == '__main__':
                             
             model.fit_siamese(ds_train)
     
-    return 0   
+    return 0
