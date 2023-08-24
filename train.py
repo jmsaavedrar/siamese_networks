@@ -58,5 +58,5 @@ if __name__ == '__main__':
                           loss= tf.keras.losses.CategoricalCrossentropy(),
                           metrics=['accuracy'])
                             
-            model.fit_siamese(ds_train)
+            model.fit(ds_train, epochs = config_model.get('EPOCHS'))
         
