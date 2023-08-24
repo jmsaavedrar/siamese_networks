@@ -59,5 +59,4 @@ if __name__ == '__main__':
                           metrics=['accuracy'])
                             
             model.fit_siamese(ds_train)
-    
-    return 0
+        
