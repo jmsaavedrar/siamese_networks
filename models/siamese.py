@@ -52,15 +52,14 @@ class Siamese(tf.keras.Model):
         
         return tf.keras.Model(inputs, outputs, name="encoder")
      
-    def computer_loss(self, xa, xp, xn):                            
+    def compute_loss(self, xa, xp, xn):                            
         margin = 1.0
         dist_pos  = tf.math.sqrt(2 - tf.reduce_sum((xa * xp), axis = 1))
         dist_neg  = tf.math.sqrt(2 - tf.reduce_sum((xa * xn), axis = 1))
         loss = tf.math.maximum(0, dist_pos - dist_neg + margin)
+                
         
-        print(tf.reduce_mean(dist_pos), flush = True)
-        
-        return tf.reduce_mean(loss)
+        return tf.reduce_mean(loss), tf.reduce_mean(dist_pos)
                 
                                     
     def train_step(self, batch):
@@ -77,7 +76,7 @@ class Siamese(tf.keras.Model):
             xp = self.encoder(positives)
             xn = self.encoder(negatives)
             
-            loss = self.compute_loss(xa, xp, xn)
+            loss, dist_pos = self.compute_loss(xa, xp, xn)
         
         # Compute gradients and update the parameters.
         learnable_params = (
@@ -88,8 +87,9 @@ class Siamese(tf.keras.Model):
 
         # Monitor loss.        
         self.loss_tracker.update_state(loss)
+        self.dist_pos_tracker.update_state(dist_pos)
         
-        return {"loss": self.loss_tracker.result()}
+        return {"loss": self.loss_tracker.result(), "dist_pos": self.dist_pos_tracker.result()}
                                         
     
 #     def fit_siamese(self, data):
