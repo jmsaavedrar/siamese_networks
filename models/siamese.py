@@ -53,8 +53,8 @@ class Siamese(tf.keras.Model):
      
     def compute_loss(self, xa, xp, xn):                            
         margin = 1.0
-        dist_pos = tf.sqrt(tf.reduce_sum(tf.math.square(xa - xp), axis = 1))
-        dist_neg = tf.sqrt(tf.reduce_sum(tf.math.square(xa - xn), axis = 1))
+        dist_pos = tf.reduce_sum(tf.math.square(xa - xp), axis = 1)
+        dist_neg = tf.reduce_sum(tf.math.square(xa - xn), axis = 1)
         #dist_pos  = tf.math.sqrt(2.0 - 2.0*tf.reduce_sum((xa * xp), axis = 1))
         #dist_neg  = tf.math.sqrt(2.0 - 2.0*tf.reduce_sum((xa * xn), axis = 1))
         loss = tf.math.maximum(0.0, dist_pos - dist_neg + margin)
