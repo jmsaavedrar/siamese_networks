@@ -28,13 +28,13 @@ class Siamese(tf.keras.Model):
         
     def get_encoder(self):       
         inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS))                
-        x = inputs / 127.5 - 1
+        x = inputs # / 127.5 - 1
         #the backbone can be an input to the clas SimSiam
         bkbone = resnet.ResNetBackbone([3,4,6,3], [64,128, 256, 512], kernel_regularizer = tf.keras.regularizers.l2(self.WEIGHT_DECAY))        
         x = bkbone(x)   
         # Projection head.
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(2.0 * self.PROJECT_DIM)(x)
+        x = tf.keras.layers.Dense(self.PROJECT_DIM)(x)
         x = tf.keras.layers.BatchNormalization()(x)
         x = tf.keras.layers.ReLU()(x)
         x = tf.keras.layers.Dense(self.PROJECT_DIM)(x)
@@ -53,8 +53,8 @@ class Siamese(tf.keras.Model):
      
     def compute_loss(self, xa, xp, xn):                            
         margin = 1.0
-        dist_pos = tf.reduce_sum(tf.math.square(xa - xp), axis = 1)
-        dist_neg = tf.reduce_sum(tf.math.square(xa - xn), axis = 1)
+        dist_pos = tf.sqrt(tf.reduce_sum(tf.math.square(xa - xp)), axis = 1)
+        dist_neg = tf.sqrt(tf.reduce_sum(tf.math.square(xa - xn)), axis = 1)
         #dist_pos  = tf.math.sqrt(2.0 - 2.0*tf.reduce_sum((xa * xp), axis = 1))
         #dist_neg  = tf.math.sqrt(2.0 - 2.0*tf.reduce_sum((xa * xn), axis = 1))
         loss = tf.math.maximum(0.0, dist_pos - dist_neg + margin)
