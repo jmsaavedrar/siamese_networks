@@ -23,13 +23,13 @@ class Siamese(tf.keras.Model):
         self.CHANNELS = 3        
         self.encoder = self.get_encoder()
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
+        self.dist_pos_tracker = tf.keras.metrics.Mean(name="dist_pos")
         
     def get_encoder(self):       
         inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS))                
         x = inputs / 127.5 - 1
         #the backbone can be an input to the clas SimSiam
-        bkbone = resnet.ResNetBackbone([3,4,6,3], [64,128, 256, 512], kernel_regularizer = tf.keras.regularizers.l2(self.WEIGHT_DECAY))
-        #bkbone = simple.Backbone()
+        bkbone = resnet.ResNetBackbone([3,4,6,3], [64,128, 256, 512], kernel_regularizer = tf.keras.regularizers.l2(self.WEIGHT_DECAY))        
         x = bkbone(x)   
         # Projection head.
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
@@ -43,12 +43,12 @@ class Siamese(tf.keras.Model):
         #x = tf.keras.layers.Flatten()(x)        
         x = tf.keras.layers.Dense(
             self.PROJECT_DIM, 
-            use_bias=False, 
+            use_bias=True, 
             kernel_regularizer=tf.keras.regularizers.l2(self.WEIGHT_DECAY)
         )(x)
-        outputs = tf.keras.layers.BatchNormalization()(x)
+        #outputs = tf.keras.layers.BatchNormalization()(x)
         
-        outputs = tf.math.l2_normalize(outputs, axis=1)
+        outputs = tf.math.l2_normalize(x, axis=1)
         
         return tf.keras.Model(inputs, outputs, name="encoder")
      
@@ -57,7 +57,7 @@ class Siamese(tf.keras.Model):
         dist_pos  = tf.math.sqrt(2 - tf.reduce_sum((xa * xp), axis = 1))
         dist_neg  = tf.math.sqrt(2 - tf.reduce_sum((xa * xn), axis = 1))
         loss = tf.math.maximum(0, dist_pos - dist_neg + margin)
-        return tf.reduce_mean(loss)
+        return tf.reduce_mean(loss), dist_pos
                 
                                     
     def train_step(self, batch):
@@ -74,7 +74,7 @@ class Siamese(tf.keras.Model):
             xp = self.encoder(positives)
             xn = self.encoder(negatives)
             
-            loss = self.compute_loss(xa, xp, xn)
+            loss, dist_pos = self.compute_loss(xa, xp, xn)
         
         # Compute gradients and update the parameters.
         learnable_params = (
@@ -85,7 +85,8 @@ class Siamese(tf.keras.Model):
 
         # Monitor loss.        
         self.loss_tracker.update_state(loss)
-        return {"loss": self.loss_tracker.result()}
+        self.dist_pos_tracker.update(dist_pos)
+        return {"loss": self.loss_tracker.result(), "dist_pos" : self.dist_pos_tracker.result()}
                                         
     
 #     def fit_siamese(self, data):
