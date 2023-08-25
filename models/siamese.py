@@ -24,6 +24,7 @@ class Siamese(tf.keras.Model):
         self.encoder = self.get_encoder()
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
         self.dist_pos_tracker = tf.keras.metrics.Mean(name="dist_pos")
+        self.dist_neg_tracker = tf.keras.metrics.Mean(name="dist_neg")
         
     def get_encoder(self):       
         inputs = tf.keras.layers.Input((self.CROP_SIZE, self.CROP_SIZE, self.CHANNELS))                
@@ -58,7 +59,7 @@ class Siamese(tf.keras.Model):
         dist_neg  = tf.math.sqrt(2.0 - 2.0*tf.reduce_sum((xa * xn), axis = 1))
         loss = tf.math.maximum(0.0, dist_pos - dist_neg + margin)
                         
-        return tf.reduce_mean(loss), tf.reduce_mean(dist_pos)
+        return tf.reduce_mean(loss), tf.reduce_mean(dist_pos), tf.reduce_mean(dist_neg)
                 
                                     
     def train_step(self, batch):
@@ -76,7 +77,7 @@ class Siamese(tf.keras.Model):
             xa = self.encoder(anchors)
             xp = self.encoder(positives)
             xn = self.encoder(negatives)            
-            loss, dist_pos = self.compute_loss(xa, xp, xn)
+            loss, dist_pos, dist_neg = self.compute_loss(xa, xp, xn)
         
         # Compute gradients and update the parameters.
         learnable_params = (
@@ -85,11 +86,12 @@ class Siamese(tf.keras.Model):
         gradients = tape.gradient(loss, learnable_params)
         self.optimizer.apply_gradients(zip(gradients, learnable_params))
 
-        # Monitor loss.        
+        # tracking status.        
         self.loss_tracker.update_state(loss)
         self.dist_pos_tracker.update_state(dist_pos)
+        self.dist_neg_tracker.update_state(dist_neg)
         
-        return {"loss": self.loss_tracker.result(), "dist_pos": self.dist_pos_tracker.result()}
+        return {"loss": self.loss_tracker.result(), "dist_pos": self.dist_pos_tracker.result(), "dist_neg": self.dist_pos_tracker.result()}
                                         
     
 #     def fit_siamese(self, data):
