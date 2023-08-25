@@ -18,8 +18,8 @@ def map_func(example_serialized):
     image_positive = tf.image.resize_with_pad(image_positive, 256, 256)
     image_anchor = tf.image.random_crop(image_anchor, size = [224, 224, 3])
     image_positive = tf.image.random_crop(image_positive, size = [224, 224, 3])
-    image_positive = tf.cast(image_positive, tf.uint8)    
-    image_anchor = tf.cast(image_anchor, tf.uint8)
+    image_positive = tf.cast(image_positive, tf.float32)    
+    image_anchor = tf.cast(image_anchor, tf.float32)
     return image_anchor, image_positive 
 
         
@@ -54,6 +54,6 @@ if __name__ == '__main__':
     if gpu_id >= 0 :
         with tf.device('/device:GPU:{}'.format(gpu_id)) :
             model = siamese.Siamese(config_model, config_data)
-            model.compile(optimizer=tf.keras.optimizers.SGD(momentum=0.9))                            
+            model.compile(optimizer=tf.keras.optimizers.Adam()), #optimizer=tf.keras.optimizers.SGD(momentum=0.9))                            
             model.fit(ds_train, epochs = config_model.getint('EPOCHS'))
         
