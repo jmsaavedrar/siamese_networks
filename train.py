@@ -54,9 +54,6 @@ if __name__ == '__main__':
     if gpu_id >= 0 :
         with tf.device('/device:GPU:{}'.format(gpu_id)) :
             model = siamese.Siamese(config_model, config_data)
-            model.compile(optimizer=tf.keras.optimizers.SGD(momentum=0.9),
-                          loss= tf.keras.losses.CategoricalCrossentropy(),
-                          metrics=['accuracy'])
-                            
+            model.compile(optimizer=tf.keras.optimizers.SGD(momentum=0.9))                            
             model.fit(ds_train, epochs = config_model.getint('EPOCHS'))
         

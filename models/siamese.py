@@ -38,14 +38,14 @@ class Siamese(tf.keras.Model):
             use_bias=False, 
             kernel_regularizer=tf.keras.regularizers.l2()
         )(x)
-        x = tf.keras.layers.BatchNormalization()(x)
-        x = tf.keras.layers.ReLU()(x)
-        #x = tf.keras.layers.Flatten()(x)        
-        x = tf.keras.layers.Dense(
-            self.PROJECT_DIM, 
-            use_bias=True, 
-            kernel_regularizer=tf.keras.regularizers.l2(self.WEIGHT_DECAY)
-        )(x)
+#         x = tf.keras.layers.BatchNormalization()(x)
+#         x = tf.keras.layers.ReLU()(x)
+#         #x = tf.keras.layers.Flatten()(x)        
+#         x = tf.keras.layers.Dense(
+#             self.PROJECT_DIM, 
+#             use_bias=True, 
+#             kernel_regularizer=tf.keras.regularizers.l2(self.WEIGHT_DECAY)
+#         )(x)
         #outputs = tf.keras.layers.BatchNormalization()(x)
         
         outputs = tf.math.l2_normalize(x, axis=1)
@@ -54,28 +54,28 @@ class Siamese(tf.keras.Model):
      
     def compute_loss(self, xa, xp, xn):                            
         margin = 1.0
-        dist_pos  = tf.math.sqrt(2 - tf.reduce_sum((xa * xp), axis = 1))
-        dist_neg  = tf.math.sqrt(2 - tf.reduce_sum((xa * xn), axis = 1))
+        dist_pos  = tf.math.sqrt(2.0 - 2.0*tf.reduce_sum((xa * xp), axis = 1))
+        dist_neg  = tf.math.sqrt(2.0 - 2.0*tf.reduce_sum((xa * xn), axis = 1))
         loss = tf.math.maximum(0.0, dist_pos - dist_neg + margin)
-                
-        
+                        
         return tf.reduce_mean(loss), tf.reduce_mean(dist_pos)
                 
                                     
     def train_step(self, batch):
         # Unpack the data.
         anchors, positives = batch
+        # select negatives
         n = tf.shape(anchors)[0]
         pos = tf.range(n)
         perm = tf.random.shuffle(pos)
         perm = tf.where(perm == pos, (perm + 1) % n, perm)
         negatives = tf.gather(anchors, perm)
         #view(anchors, positives, negatives)
+        # training one step
         with tf.GradientTape() as tape:
             xa = self.encoder(anchors)
             xp = self.encoder(positives)
-            xn = self.encoder(negatives)
-            
+            xn = self.encoder(negatives)            
             loss, dist_pos = self.compute_loss(xa, xp, xn)
         
         # Compute gradients and update the parameters.
