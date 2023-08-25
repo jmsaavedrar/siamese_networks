@@ -34,13 +34,11 @@ class Siamese(tf.keras.Model):
         x = bkbone(x)   
         # Projection head.
         x = tf.keras.layers.GlobalAveragePooling2D()(x)
-        x = tf.keras.layers.Dense(
-            self.PROJECT_DIM, 
-            use_bias=False, 
-            kernel_regularizer=tf.keras.regularizers.l2()
-        )(x)
-#         x = tf.keras.layers.BatchNormalization()(x)
-#         x = tf.keras.layers.ReLU()(x)
+        x = tf.keras.layers.Dense(2.0 * self.PROJECT_DIM)(x)
+        x = tf.keras.layers.BatchNormalization()(x)
+        x = tf.keras.layers.ReLU()(x)
+        x = tf.keras.layers.Dense(self.PROJECT_DIM)(x)
+
 #         #x = tf.keras.layers.Flatten()(x)        
 #         x = tf.keras.layers.Dense(
 #             self.PROJECT_DIM, 
