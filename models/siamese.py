@@ -57,7 +57,7 @@ class Siamese(tf.keras.Model):
         dist_pos  = tf.math.sqrt(2 - tf.reduce_sum((xa * xp), axis = 1))
         dist_neg  = tf.math.sqrt(2 - tf.reduce_sum((xa * xn), axis = 1))
         loss = tf.math.maximum(0, dist_pos - dist_neg + margin)
-        return tf.reduce_mean(loss), dist_pos
+        return tf.reduce_mean(loss), tf.reduce_mean(dist_pos)
                 
                                     
     def train_step(self, batch):
