@@ -4,6 +4,7 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 import configparser
 import argparse
+import numpy as np
 
 #---------------------------------------------------------------------------------------
 def map_func(example_serialized):    
@@ -36,8 +37,10 @@ if __name__ == '__main__':
     
     config = configparser.ConfigParser()
     config.read(args.config)
-    config_model = config['RESNET']
+    model_name = args.model
+    config_model = config[model_name]
     config_data = config['DATA']
+    dataset_name = config_data.get('DATASET')
     
     gpu_id = 0
     if not args.gpu is None :
@@ -51,9 +54,26 @@ if __name__ == '__main__':
         .batch(config_model.getint('BATCH_SIZE'))
         .prefetch(AUTO) )
     
+    #----------------------------------------------------------------------------------
+    model_dir =  config_model.get('MODEL_DIR')    
+    if not config_model.get('EXP_CODE') is None :
+        model_dir = os.path.join(model_dir, config_model.get('EXP_CODE'))
+    model_dir = os.path.join(model_dir, dataset_name, model_name)
+    if not os.path.exists(model_dir) :
+        os.makedirs(os.path.join(model_dir, 'ckp'))
+        os.makedirs(os.path.join(model_dir, 'model'))
+        print('--- {} was created'.format(os.path.dirname(model_dir)))
+    #----------------------------------------------------------------------------------
+    
     if gpu_id >= 0 :
         with tf.device('/device:GPU:{}'.format(gpu_id)) :
             model = siamese.Siamese(config_model, config_data)
             model.compile(optimizer=tf.keras.optimizers.SGD(momentum=0.9))                            
-            model.fit(ds_train, epochs = config_model.getint('EPOCHS'))
+            history = model.fit(ds_train, epochs = config_model.getint('EPOCHS'))
         
+        # saving the final model    
+        model_file = os.path.join(model_dir, 'model', 'model')
+        history_file = os.path.join(model_dir, 'model', 'history.npy')
+        np.save(history_file, history.history)
+        model.save_weights(model_file)
+        print("model saved to {}".format(model_file))
