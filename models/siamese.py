@@ -91,7 +91,7 @@ class Siamese(tf.keras.Model):
         self.dist_pos_tracker.update_state(dist_pos)
         self.dist_neg_tracker.update_state(dist_neg)
         
-        return {"loss": self.loss_tracker.result(), "dist_pos": self.dist_pos_tracker.result(), "dist_neg": self.dist_pos_tracker.result()}
+        return {"loss": self.loss_tracker.result(), "dist_pos": self.dist_pos_tracker.result(), "dist_neg": self.dist_neg_tracker.result()}
                                         
     
 #     def fit_siamese(self, data):
