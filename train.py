@@ -74,5 +74,5 @@ if __name__ == '__main__':
         history_file = os.path.join(model_dir, 'model', 'history.npy')
         np.save(history_file, history.history)
         #model.save_weights(model_file)
-        model.save(model_file)
+        model.encoder.save(model_file)
         print('model was saved at {}'.format(model_file))        
