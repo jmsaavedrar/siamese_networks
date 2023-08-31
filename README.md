@@ -1,9 +1,9 @@
 # Siamese Neworks
+This repo implements a resnet-based siamese network for representation learning.  You can run th project using the following steps ;
+
 ## Prepare the dataset for training and testing
-   Here, we recommend to use tfds (tfds_look.py)
-   train : 5000
-   test : 116
-   download [tfds_look.tar](https://www.dropbox.com/scl/fi/kbcntw4rb4vstf19caaer/tfds_look.tar?rlkey=xlx1sycgsruee89x1lyei5d0m&dl=0) and untar it into ~/tensorflow_datasets
+   For this example we use the [Tootally-Looks-Like](https://sites.google.com/view/totally-looks-like-dataset)  dataset.  To use it, we recommend using tfds [tfds_look.py](../datasets/tfds_look/tfds_look.py). We split this dataset into 
+   5000 image pairs for training and 116 for testing. You can dowloand the tfds format of the dataset from [here](https://www.dropbox.com/scl/fi/kbcntw4rb4vstf19caaer/tfds_look.tar?rlkey=xlx1sycgsruee89x1lyei5d0m&dl=0). Please download it and apply tar -xf into ~/tensorflow_datasets.
    
    
    
