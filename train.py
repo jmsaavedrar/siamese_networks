@@ -12,9 +12,7 @@ def map_func(example_serialized):
 #                                               'label': tfds.features.ClassLabel(names=range(100))})
 #     features = tf.io.parse_example(example_serialized, features_map)
     image_anchor = example_serialized['image-anchor']
-    image_positive = example_serialized['image_positive']
-    print(image_anchor.shape, flush = True)    
-    print(image_positive.shape, flush = True)
+    image_positive = example_serialized['image_positive']    
     image_anchor = tf.image.resize_with_pad(image_anchor, 256, 256)
     image_positive = tf.image.resize_with_pad(image_positive, 256, 256)
     image_anchor = tf.image.random_crop(image_anchor, size = [224, 224, 3])
@@ -75,5 +73,6 @@ if __name__ == '__main__':
         model_file = os.path.join(model_dir, 'model', 'model')
         history_file = os.path.join(model_dir, 'model', 'history.npy')
         np.save(history_file, history.history)
-        model.save_weights(model_file)
-        print("model saved to {}".format(model_file))
+        #model.save_weights(model_file)
+        model.save(model_file)
+        print('model was saved at {}'.format(model_file))        

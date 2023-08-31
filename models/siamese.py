@@ -20,6 +20,7 @@ class Siamese(tf.keras.Model):
         self.CROP_SIZE = config_data.getint('CROP_SIZE')
         self.PROJECT_DIM =  config_model.getint('PROJECT_DIM')
         self.WEIGHT_DECAY = config_model.getfloat('WEIGHT_DECAY')            
+        self.MARGIN = config_model.getfloat('MARGIN')
         self.CHANNELS = 3        
         self.encoder = self.get_encoder()
         self.loss_tracker = tf.keras.metrics.Mean(name="loss")
@@ -52,7 +53,7 @@ class Siamese(tf.keras.Model):
         return tf.keras.Model(inputs, outputs, name="encoder")
      
     def compute_loss(self, xa, xp, xn):                            
-        margin = 1.0
+        margin = self.MARGIN
         dist_pos = tf.sqrt(tf.reduce_sum(tf.math.square(xa - xp), axis = 1))
         dist_neg = tf.sqrt(tf.reduce_sum(tf.math.square(xa - xn), axis = 1))
         #dist_pos  = tf.math.sqrt(2.0 - 2.0*tf.reduce_sum((xa * xp), axis = 1))
