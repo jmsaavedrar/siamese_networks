@@ -15,9 +15,10 @@ You can download the trained model from [here](https://www.dropbox.com/scl/fi/m8
 
 ## Test the trained model
 We will apply similarity search to test the trained encoder. To this end, we can use the [sim_search project](https://github.com/jmsaavedrar/siamese_networks). Then apply the folowing steps:
- 1.  Download the [testing images](https://www.dropbox.com/scl/fi/qb50cb9lw1umxd5loeb3v/images_for_test.zip?rlkey=o2jbn08ozj5iwgnfc9o9phl32&dl=0). The dataset containg two parallel folders (right and left).
+
+ 1.  Download the [testing images](https://www.dropbox.com/scl/fi/qb50cb9lw1umxd5loeb3v/images_for_test.zip?rlkey=o2jbn08ozj5iwgnfc9o9phl32&dl=0). The dataset contains two parallel folders (right and left).
  2. Generate two files,  one with the files in the folder **right** and the other with those in the **left**. 
- 3. 
+ 3. Run
 	python ssearch.py 
 		-config <SIAMESE_NETWORK FOLDER>config/look.ini
 		-catalog <FILE WITH CATALOG IMAGES> 
@@ -25,7 +26,7 @@ We will apply similarity search to test the trained encoder. To this end, we can
 		-model_path  <MODEL PATH>
 
 
-After running you will get some results in the folder **results**. Some examples appear below:
+After running you will get some results in the folder **results**. Some examples appear below (first image is the query and the rest are ordered according to the similarity with the first):
 ![output_00204 jpg](https://github.com/jmsaavedrar/siamese_networks/assets/8441460/d5d9c114-7cb4-4908-9d93-e393e2043847)
 ![output_00518 jpg](https://github.com/jmsaavedrar/siamese_networks/assets/8441460/6eeb9a38-a34f-420d-b6c9-ee74b34251b8)
 ![output_00659 jpg](https://github.com/jmsaavedrar/siamese_networks/assets/8441460/1295e05a-e6f2-4a1e-9ea5-70daf5ab298c)
