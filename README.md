@@ -32,3 +32,4 @@ After running you will get some results in the folder **results**. Some examples
 ![output_00659 jpg](https://github.com/jmsaavedrar/siamese_networks/assets/8441460/1295e05a-e6f2-4a1e-9ea5-70daf5ab298c)
 ![output_00944 jpg](https://github.com/jmsaavedrar/siamese_networks/assets/8441460/a7d9d657-98af-4f3e-9645-4c211b6d08fd)
 ![output_01097 jpg](https://github.com/jmsaavedrar/siamese_networks/assets/8441460/34a806ea-50a2-47bf-a4dd-28cbcc56e38a)
+![output_02537 jpg](https://github.com/jmsaavedrar/siamese_networks/assets/8441460/311939e4-e879-4f22-9b64-70a1f41f4a65)
