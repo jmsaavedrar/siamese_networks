@@ -70,7 +70,7 @@ if __name__ == '__main__':
             history = model.fit(ds_train, epochs = config_model.getint('EPOCHS'))
         
         # saving the final model    
-        model_file = os.path.join(model_dir, 'model', 'model')
+        model_file = os.path.join(model_dir, 'model')
         history_file = os.path.join(model_dir, 'model', 'history.npy')
         np.save(history_file, history.history)
         #model.save_weights(model_file)
